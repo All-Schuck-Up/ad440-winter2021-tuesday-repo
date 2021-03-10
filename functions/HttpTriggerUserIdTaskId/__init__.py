@@ -106,7 +106,7 @@ def getTask(conn, taskId, r):
             data = dict(zip(columns, row))
 
             # Cache taskId data
-            cacheTaskId(r, taskId)
+            cacheTaskId(r, data)
 
             logging.debug('Task retrieved successfully')
             return func.HttpResponse(

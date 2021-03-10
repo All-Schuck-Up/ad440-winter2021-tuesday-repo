@@ -2,18 +2,23 @@ import logging
 import json
 import os
 import pyodbc
+import redis
 import azure.functions as func
 from ..Utils.dbHandler import dbHandler
 from ..Utils.ExceptionWithStatusCode import ExceptionWithStatusCode
 import datetime
 
-# to handle datetime with JSON
+# GLOBAL VARIABLES
+CACHE_TOGGLE = os.environ.get('CACHE_TOGGLE')
+TASKS_CACHE = b'users:all'
+
+# to handle datetime with JSON (NOT WORKING CURRENTLY)
 # It serialize datetime by converting it into string
 def default(dateHandle):
   if isinstance(dateHandle, (datetime.datetime, datetime.date)):
     return dateHandle.isoformat()
 
-# to handle datetime with JSON
+# to handle datetime with JSON (NOT WORKING)
 # It serialize datetime by converting it into string
 def default(o):
   if isinstance(o, (datetime.datetime, datetime.date)):
@@ -41,6 +46,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as err:
         return func.HttpResponse(str(err), status_code=500)
     logging.debug("Connection to DB successful!")
+
+    # Setup Redis server
+    r = setupRedis()
 
     try:
         # Return results according to the method
@@ -133,3 +141,17 @@ def addUserTask(conn, task_req_body, userId):
             status_code=200, 
             mimetype="application/json"
         )
+
+def setupRedis():
+    # Get env variables
+    REDIS_HOST = os.environ.get('REDIS_HOST')
+    REDIS_KEY = os.environ.get('REDIS_KEY')
+    REDIS_PORT = os.environ.get('REDIS_PORT')
+    
+    return redis.StrictRedis(
+        host= REDIS_HOST,
+        port= REDIS_PORT,
+        db= 0,
+        password= REDIS_KEY,
+        ssl= True
+    )
