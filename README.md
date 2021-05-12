@@ -1,7 +1,4 @@
-# ad440-winter2021-tuesday-repo
-NSC AD 440 Winter 2021 Tuesday cohort practicum repo
-
-- Change to trigger action
+# Cloud automation and testing
 
 ## Description:
   This was a 12 week contract to build a simple task manager app and implement automation, cloud monitoring, and testing.
